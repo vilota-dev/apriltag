@@ -1214,7 +1214,7 @@ image_u8_t *threshold(apriltag_detector_t *td, image_u8_t *im)
 
             // argument for biasing towards dark; specular highlights
             // can be substantially brighter than white tag parts
-            uint8_t thresh = min + (max - min) / 2;
+            uint8_t thresh = min + (max - min) / 1.5;
 
             for (int dy = 0; dy < tilesz; dy++) {
                 int y = ty*tilesz + dy;
