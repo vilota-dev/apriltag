@@ -138,6 +138,10 @@ struct apriltag_detector
     // still done at full resolution. .
     float quad_decimate;
 
+    // use decimated image from input (mipmap) instead of
+    // generating a new one. (faster) 
+    bool use_mipmap;
+
     // What Gaussian blur should be applied to the segmented image
     // (used for quad detection?)  Parameter is the standard deviation
     // in pixels.  Very noisy images benefit from non-zero values
@@ -259,7 +263,7 @@ void apriltag_detector_destroy(apriltag_detector_t *td);
 // apriltag_detection_t*. You can use apriltag_detections_destroy to
 // free the array and the detections it contains, or call
 // _detection_destroy and zarray_destroy yourself.
-zarray_t *apriltag_detector_detect(apriltag_detector_t *td, image_u8_t *im_orig);
+zarray_t *apriltag_detector_detect(apriltag_detector_t *td, image_u8_t *im_orig, image_u8_t *im_decimated);
 
 // Call this method on each of the tags returned by apriltag_detector_detect
 void apriltag_detection_destroy(apriltag_detection_t *det);

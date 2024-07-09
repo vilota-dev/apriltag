@@ -360,6 +360,7 @@ apriltag_detector_t *apriltag_detector_create()
 
     td->nthreads = 1;
     td->quad_decimate = 2.0;
+    td->use_mipmap = false;
     td->quad_sigma = 0.0;
 
     td->qtp.max_nmaxima = 10;
@@ -999,7 +1000,7 @@ static int prefer_smaller(int pref, double q0, double q1)
     return 0;
 }
 
-zarray_t *apriltag_detector_detect(apriltag_detector_t *td, image_u8_t *im_orig)
+zarray_t *apriltag_detector_detect(apriltag_detector_t *td, image_u8_t *im_orig, image_u8_t *im_decimated)
 {
     if (zarray_size(td->tag_families) == 0) {
         zarray_t *s = zarray_create(sizeof(apriltag_detection_t*));
@@ -1024,7 +1025,7 @@ zarray_t *apriltag_detector_detect(apriltag_detector_t *td, image_u8_t *im_orig)
     // and blurring parameters.
     image_u8_t *quad_im = im_orig;
     if (td->quad_decimate > 1) {
-        quad_im = image_u8_decimate(im_orig, td->quad_decimate);
+        quad_im = td->use_mipmap ? im_decimated : image_u8_decimate(im_orig, td->quad_decimate);
 
         timeprofile_stamp(td->tp, "decimate");
     }
@@ -1100,7 +1101,7 @@ zarray_t *apriltag_detector_detect(apriltag_detector_t *td, image_u8_t *im_orig)
         }
     }
 
-    if (quad_im != im_orig)
+    if (!td->use_mipmap && quad_im != im_orig)
         image_u8_destroy(quad_im);
 
     zarray_t *detections = zarray_create(sizeof(apriltag_detection_t*));
