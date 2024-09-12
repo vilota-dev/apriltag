@@ -1025,7 +1025,11 @@ zarray_t *apriltag_detector_detect(apriltag_detector_t *td, image_u8_t *im_orig,
     // and blurring parameters.
     image_u8_t *quad_im = im_orig;
     if (td->quad_decimate > 1) {
-        quad_im = td->use_mipmap ? im_decimated : image_u8_decimate(im_orig, td->quad_decimate);
+        if (td->use_mipmap) {
+            assert(im_decimated != NULL);
+            quad_im = im_decimated; // speed up by re-using calculated mipmap
+        }else
+            quad_im = image_u8_decimate(im_orig, td->quad_decimate);
 
         timeprofile_stamp(td->tp, "decimate");
     }
